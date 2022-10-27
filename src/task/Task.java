@@ -8,17 +8,19 @@ import java.time.LocalDateTime;
 public class Task {
     private static int counter = 1;
     private final int id;
-    private final String name;
+    private  String name;
     private String description;
     private TaskType taskType;
     private LocalDateTime creationDate;
     private Repeatability repeatability;
     private LocalDateTime appointment;
+    private boolean isDeleted;
 
     public Task(String name) {
         this.id = counter++;
         this.name = name;
         this.creationDate = LocalDateTime.now();
+        this.isDeleted = false;
     }
 
     public int getId() {
@@ -57,8 +59,20 @@ public class Task {
         this.repeatability = repeatability;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public LocalDateTime getAppointment() {
         return appointment;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 
     public void setAppointment(LocalDateTime appointment) {
