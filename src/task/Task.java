@@ -75,4 +75,17 @@ public class Task {
                 && !this.description.isEmpty()
                 && this.appointment != null;
     }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", taskType=" + taskType +
+                ", creationDate=" + creationDate +
+                ", repeatability=" + repeatability +
+                ", appointment=" + appointment +
+                '}';
+    }
 }
