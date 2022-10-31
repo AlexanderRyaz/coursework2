@@ -1,16 +1,18 @@
 import dailyplanner.DailyPlanner;
+import exception.NotValidTaskException;
 import task.*;
 import util.TaskType;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws NotValidTaskException {
         DailyPlanner dailyPlanner = new DailyPlanner();
         Task task1 = new Task("днюха");
         task1.setDescription("праздновать");
@@ -21,6 +23,8 @@ public class Main {
         Task task2 = new Task("свадьба");
         task2.setDescription("праздновать");
         task2.setRepeatability(new Yearly());
+        task2.setEndDate(LocalDateTime.parse("05.10.2026 00:00",
+                DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")));
         task2.setTaskType(TaskType.PERSONAL);
         task2.setAppointment(LocalDateTime.parse("11.10.2023 00:00",
                 DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")));
@@ -77,14 +81,24 @@ public class Main {
         int taskId = readTaskId(scanner);
         System.out.println("введите новое описание задачи");
         String newDescription = scanner.next();
-        dailyPlanner.getDailyPlanner().get(taskId).setDescription(newDescription);
+        Task task = dailyPlanner.getDailyPlanner().get(taskId);
+        if (task == null) {
+            System.out.println("Задача с таким номером не найдена");
+        } else {
+            task.setDescription(newDescription);
+        }
     }
 
     private static void changeTaskName(Scanner scanner, DailyPlanner dailyPlanner) {
         int taskId = readTaskId(scanner);
         System.out.println("введите новое название задачи");
         String newName = scanner.next();
-dailyPlanner.getDailyPlanner().get(taskId).setName(newName);
+        Task task = dailyPlanner.getDailyPlanner().get(taskId);
+        if (task == null) {
+            System.out.println("Задача с таким номером не найдена");
+        } else {
+            task.setName(newName);
+        }
     }
 
     private static void printRemovedTasks(DailyPlanner dailyPlanner) {
@@ -164,7 +178,11 @@ dailyPlanner.getDailyPlanner().get(taskId).setName(newName);
         }
         LocalDateTime localDateTime = readDateTime(scanner);
         task.setAppointment(localDateTime);
-        dailyPlanner.addDTask(task);
+        try {
+            dailyPlanner.addDTask(task);
+        } catch (NotValidTaskException e) {
+            System.out.println("не все данные введены");
+        }
     }
 
     private static LocalDateTime readDateTime(Scanner scanner) {
@@ -196,9 +214,12 @@ dailyPlanner.getDailyPlanner().get(taskId).setName(newName);
     private static void printTasksForDate(Scanner scanner, DailyPlanner dailyPlanner) {
         LocalDateTime dateTime = readDateTime(scanner);
         System.out.println("задачи на дату: " + dateTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
-        for (Task task : dailyPlanner.getDailyPlanner().values()) {
-            if (task.getAppointment().equals(dateTime)) {
-                System.out.println(task);
+        for (Task task : dailyPlanner.groupTasksByDate().get(dateTime)) {
+            System.out.println(task);
+            if (!(task.getRepeatability() instanceof Single)) {
+                System.out.println("так же запланированно на следующие даты: "
+                        + Arrays.toString(task.getRepeatability().getNextAppointments(task.getAppointment(),
+                        task.getEndDate()).toArray()));
             }
         }
     }

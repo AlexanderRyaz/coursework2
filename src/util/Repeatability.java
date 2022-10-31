@@ -1,7 +1,8 @@
 package util;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface Repeatability {
-LocalDateTime getNextAppointment(LocalDateTime appointment);
+    List<LocalDateTime> getNextAppointments(LocalDateTime appointment, LocalDateTime endDate);
 }

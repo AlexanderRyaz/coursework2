@@ -10,14 +10,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DailyPlanner {
-    Map<Integer, Task> dailyPlanner = new HashMap<>();
-    Map<Integer, Task> removedTasks = new HashMap<>();
+   private final Map<Integer, Task> dailyPlanner = new HashMap<>();
+
 
     public Map<Integer, Task> getDailyPlanner() {
         return dailyPlanner;
     }
 
-    public void addDTask(Task task) {
+    public void addDTask(Task task) throws NotValidTaskException {
         if (task.isValid()) {
             dailyPlanner.put(task.getId(), task);
             return;
@@ -29,7 +29,6 @@ public class DailyPlanner {
         if (dailyPlanner.containsKey(id)) {
             Task task = dailyPlanner.get(id);
             task.setDeleted(true);
-            removedTasks.put(id, task);
         } else {
             System.out.println("задача с id " + id + " не найдена");
         }
@@ -37,7 +36,7 @@ public class DailyPlanner {
 
     public void printRemovedTasks() {
         System.out.println("удаленные задачи: ");
-        for (Task task : removedTasks.values()) {
+        for (Task task : dailyPlanner.values().stream().filter(Task::isDeleted).collect(Collectors.toList())) {
             System.out.println(task);
         }
     }
